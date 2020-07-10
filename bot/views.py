@@ -74,7 +74,8 @@ def bot_get(request):
         rm(chat_id, message_id)
     except KeyError:
         pass
-    MemberList.objects.get_or_create(member_id=member_id, user_name=user_name, group=group)
+    MemberList.objects.get_or_create(member_id=member_id, user_name=user_name)
+    MemberList.objects.get(member_id=member_id, user_name=user_name).group.add(group)
     if message == 'add_me':
         sm('added successfully', chat_id)
     elif message.find('=delete_above') != -1 and message.find('=delete_above') != 0:
