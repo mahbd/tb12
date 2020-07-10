@@ -62,7 +62,7 @@ def bot_get(request):
     if message == 'add_me':
         sm('added successfully', chat_id)
     elif message.find('=delete_above') != -1 and message.find('=delete_above') != 0:
-        for m in range(int(message[0] + 1)):
+        for m in range(int(message[0]) + 1):
             rm(chat_id, message_id - m)
     elif group.name == 'test_bot':
         try:
