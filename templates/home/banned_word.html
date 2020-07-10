@@ -1,0 +1,16 @@
+{% extends 'base/base.html' %}
+{% block content %}
+    <div class="container text-white">
+        <button class="btn-lg btn-info">Banned word from BRUR NewBees</button>
+        <form action="{% url 'home:abd' %}" method="post">
+            {% csrf_token %}
+            <div class="form-group bg-white text-black-50">
+                <label for="word">Add word</label><input type="text" name="word" id="word">
+                <button type="submit" class="btn-lg btn-outline-danger">Save</button>
+            </div>
+        </form>
+        {% for word in words %}
+        <h4>{{ word.word }}</h4>
+        {% endfor %}
+    </div>
+{% endblock content %}

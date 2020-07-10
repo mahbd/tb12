@@ -38,6 +38,7 @@ def bot_get(request):
     except KeyError:
         message = "ErrorHappenedInBot"
     chat_id = data['message']['chat']['id']
+    message_id = data['message']['message_id']
     if chat_type == 'group' or chat_type == 'supergroup':
         name = data['message']['chat']['title']
     else:
@@ -53,6 +54,7 @@ def bot_get(request):
     try:
         member_id = data['message']['new_chat_member']['id']
         user_name = data['message']['new_chat_member']['username']
+        rm(chat_id, message_id)
     except KeyError:
         member_id = data['message']['from']['id']
         user_name = data['message']['from']['username']
@@ -60,8 +62,7 @@ def bot_get(request):
     if message == 'add_me':
         sm('added successfully', chat_id)
     elif message.find('=delete_above') != -1 and message.find('=delete_above') != 0:
-        message_id = data['message']['message_id']
-        for m in range(int(message[0])):
+        for m in range(int(message[0] + 1)):
             rm(chat_id, message_id - m)
     elif group.name == 'test_bot':
         try:
