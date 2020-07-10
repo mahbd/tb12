@@ -5,7 +5,6 @@ from .models import BotAccessInfo
 
 def bot_get(request):
     data = json.loads(request.body)
-    print(data)
     try:
         chat_type = data['message']['chat']['chat_type']
     except KeyError:
@@ -19,16 +18,11 @@ def bot_get(request):
         name = data['message']['chat']['title']
     else:
         try:
-            fn = data['message']['from']['first_name']
+            name = data['message']['from']['username']
         except KeyError:
-            fn = " "
-        try:
-            ln = data['message']['from']['last_name']
-        except KeyError:
-            ln = " "
-        name = fn + ' ' + ln
+            name = 'not_found'
     BotAccessInfo.objects.get_or_create(type=chat_type, name=name, chat_id=chat_id)
-    BotAccessInfo.objects.get(type=chat_type, name=name, chat_id=chat_id)
+    print(data)
     '''
     telegram_url = "https://api.telegram.org/bot"
     tutorial_bot_token = "1214433734:AAGgKkYrFuiMSXmRNoUmVPvaBUD9HVVgVuM"
