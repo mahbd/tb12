@@ -58,10 +58,7 @@ def bot_get(request):
         member_id = data['message']['new_chat_member']['id']
         user_name = data['message']['new_chat_member']['username']
         new_user = True
-        message_to_send = "Hey, You are now part of BRUR NewBies. Please send your online judge(codeforces, uri and vjudge) " \
-                          "details to @mahmudula2000 so that I can see automically if you solved any problem. Remember If " \
-                          "you don't send information, I couldn't know about your submission and will remove you " \
-                          "from group after 72 hours"
+        message_to_send = "Hey, You are now part of BRUR NewBies. Please send your codeforces, uri and vjudge details"
         res = sm(message_to_send, member_id)
         # rm(chat_id, message_id)
         print(res)
