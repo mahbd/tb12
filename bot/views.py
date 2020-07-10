@@ -64,9 +64,9 @@ def bot_get(request):
     elif message.find('=delete_above') != -1 and message.find('=delete_above') != 0:
         for m in range(int(message[0]) + 1):
             rm(chat_id, message_id - m)
-    elif group.name == 'test_bot':
+    elif group.name == 'BRUR NewBees':
         try:
-            BannedWord.objects.get(word=message.strip())
+            BannedWord.objects.get(word=message.strip().lower())
             message_id = data['message']['message_id']
             rm(chat_id, message_id)
         except BannedWord.DoesNotExist:
@@ -95,13 +95,13 @@ def rmv_usr(request):
     if request.method == 'POST':
         telegram_url = "https://api.telegram.org/bot" + BOT_ACCESS_TOKEN + "/kickChatMember"
         data = {
-            "chat_id": -460276901,
+            "chat_id": -370548956,
             "user_id": request.POST['user_id']
         }
         res = requests.post(telegram_url, data=data).json()
         return JsonResponse(res)
     context = {
-        'details': MemberList.objects.filter(group__name='bot_test'),
+        'details': MemberList.objects.filter(group__name='BRUR NewBees'),
         'title': 'remove user'
     }
     return render(request, 'bot/rmv_usr.html', context)
