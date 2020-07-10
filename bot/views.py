@@ -28,6 +28,7 @@ def rm(chat_id, message_id):
 
 
 def bot_get(request):
+    new_user = False
     data = json.loads(request.body)
     try:
         chat_type = data['message']['chat']['type']
@@ -54,6 +55,7 @@ def bot_get(request):
     try:
         member_id = data['message']['new_chat_member']['id']
         user_name = data['message']['new_chat_member']['username']
+        new_user = True
         rm(chat_id, message_id)
     except KeyError:
         member_id = data['message']['from']['id']
@@ -65,6 +67,12 @@ def bot_get(request):
         for m in range(int(message[0]) + 1):
             rm(chat_id, message_id - m)
     elif group.name == 'BRUR NewBees':
+        if new_user:
+            message_to_send = "Hey, You are now part of BRUR NewBies. Please send your online judge(codeforces, uri and vjudge) " \
+                      "details to @mahmudula2000 so that I can see automically if you solved any problem. Remember If " \
+                      "you don't send information, I couldn't know about your submission and will remove you " \
+                      "from group after 72 hours"
+            sm(message_to_send, member_id)
         try:
             BannedWord.objects.get(word=message.strip().lower())
             message_id = data['message']['message_id']
