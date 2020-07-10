@@ -1,10 +1,30 @@
 import json
-
 import requests
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
+from .models import BotAccessInfo, MemberList, BannedWord
+from tb12.settings import BOT_ACCESS_TOKEN
 
-from .models import BotAccessInfo, MemberList
+
+def sm(text, chat_id):
+    telegram_url = 'https://api.telegram.org/bot' + BOT_ACCESS_TOKEN + 'sendMessage'
+    data = {
+        "chat_id": chat_id,
+        "text": text,
+        "parse_mode": "Markdown",
+    }
+    res = requests.post(telegram_url, data=data)
+    return res
+
+
+def rm(chat_id, message_id):
+    telegram_url = 'https://api.telegram.org/bot' + BOT_ACCESS_TOKEN + '/deleteMessage'
+    data = {
+        "chat_id": chat_id,
+        "message_id": message_id
+    }
+    res = requests.post(telegram_url, data=data)
+    print(res)
 
 
 def bot_get(request):
@@ -16,7 +36,7 @@ def bot_get(request):
     try:
         message = data['message']['text']
     except KeyError:
-        message = "A file shared"
+        message = "ErrorHappenedInBot"
     chat_id = data['message']['chat']['id']
     if chat_type == 'group' or chat_type == 'supergroup':
         name = data['message']['chat']['title']
@@ -38,29 +58,28 @@ def bot_get(request):
         user_name = data['message']['from']['username']
     MemberList.objects.get_or_create(member_id=member_id, user_name=user_name, group=group)
     if message == 'add_me':
-        telegram_url = "https://api.telegram.org/bot"
-        tutorial_bot_token = "1214433734:AAGgKkYrFuiMSXmRNoUmVPvaBUD9HVVgVuM"
-        data = {
-            "chat_id": chat_id,
-            "text": 'Added successfully.',
-            "parse_mode": "Markdown",
-        }
-        requests.post(
-            f"{telegram_url}{tutorial_bot_token}/sendMessage", data=data
-        )
+        sm('added successfully', chat_id)
+    elif message.find('=delete_above') != -1 and message.find('=delete_above') != 0:
+        message_id = data['message']['message_id']
+        for m in range(int(message[0])):
+            rm(chat_id, message_id - m)
+    elif group.name == 'test_bot':
+        try:
+            BannedWord.objects.get(word=message.strip())
+            message_id = data['message']['message_id']
+            rm(chat_id, message_id)
+        except BannedWord.DoesNotExist:
+            pass
+        except BannedWord.MultipleObjectsReturned:
+            message_id = data['message']['message_id']
+            rm(chat_id, message_id)
     print(data)
     return HttpResponse("Success")
 
 
 def send_tm(request):
     if request.method == 'POST':
-        telegram_url = "https://api.telegram.org/bot1214433734:AAGgKkYrFuiMSXmRNoUmVPvaBUD9HVVgVuM/sendMessage"
-        data = {
-            "chat_id": request.POST['chat_id'],
-            "text": request.POST['message'],
-            "parse_mode": "Markdown",
-        }
-        res = requests.post(telegram_url, data=data)
+        res = sm(request.POST['message'], request.POST['chat_id'])
         return JsonResponse(res)
     else:
         details = BotAccessInfo.objects.all()
@@ -73,7 +92,7 @@ def send_tm(request):
 
 def rmv_usr(request):
     if request.method == 'POST':
-        telegram_url = "https://api.telegram.org/bot1214433734:AAGgKkYrFuiMSXmRNoUmVPvaBUD9HVVgVuM/kickChatMember"
+        telegram_url = "https://api.telegram.org/bot" + BOT_ACCESS_TOKEN + "/kickChatMember"
         data = {
             "chat_id": -460276901,
             "user_id": request.POST['user_id']
