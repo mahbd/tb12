@@ -14,6 +14,7 @@ def sm(text, chat_id):
         "parse_mode": "Markdown",
     }
     res = requests.post(telegram_url, data=data).json()
+    print(res)
     return res
 
 
@@ -58,10 +59,8 @@ def bot_get(request):
         member_id = data['message']['new_chat_member']['id']
         user_name = data['message']['new_chat_member']['username']
         new_user = True
-        message_to_send = "Hey, You are now part of BRUR NewBies. Please send your codeforces, uri and vjudge details"
-        res = sm(message_to_send, member_id)
-        # rm(chat_id, message_id)
-        print(res)
+        print("running")
+        rm(chat_id, message_id)
     except KeyError:
         pass
     try:
@@ -75,12 +74,18 @@ def bot_get(request):
     elif message.find('=delete_above') != -1 and message.find('=delete_above') != 0:
         for m in range(int(message[0]) + 1):
             rm(chat_id, message_id - m)
-    elif group.name == 'BRUR NewBees':
-
+    elif group.name == 'BRUR NewBees' or group.name == 'bot_test':
+        if new_user:
+            mts = "Hey, You are now part of BRUR NewBies. Please send your online judge(codeforces, uri and vjudge) " \
+                  "details to @mahmudula2000 so that I can see automically if you solved any problem. Remember If " \
+                  "you don't send information, I couldn't know about your submission and will remove you " \
+                  "from group after 72 hours"
+            sm(mts, member_id)
         try:
             BannedWord.objects.get(word=message.strip().lower())
             message_id = data['message']['message_id']
             rm(chat_id, message_id)
+            sm("Your message contains banned sentence, so auto deleted", member_id)
         except BannedWord.DoesNotExist:
             pass
         except BannedWord.MultipleObjectsReturned:
