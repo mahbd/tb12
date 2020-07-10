@@ -18,7 +18,7 @@ def bot_get(request):
     except KeyError:
         message = "A file shared"
     chat_id = data['message']['chat']['id']
-    if chat_type == 'group' or chat_type == 'super_group':
+    if chat_type == 'group' or chat_type == 'supergroup':
         name = data['message']['chat']['title']
     else:
         try:
