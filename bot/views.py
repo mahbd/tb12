@@ -47,6 +47,8 @@ def bot_get(request):
             name = data['message']['from']['username']
         except KeyError:
             name = 'not_found'
+    member_id = 100
+    user_name = 'none'
     BotAccessInfo.objects.get_or_create(type=chat_type, name=name, chat_id=chat_id)
     if chat_type == 'private':
         group = BotAccessInfo.objects.get(name='private')
@@ -56,23 +58,29 @@ def bot_get(request):
         member_id = data['message']['new_chat_member']['id']
         user_name = data['message']['new_chat_member']['username']
         new_user = True
+        print("running")
         rm(chat_id, message_id)
     except KeyError:
+        pass
+    try:
         member_id = data['message']['from']['id']
         user_name = data['message']['from']['username']
+    except KeyError:
+        pass
     MemberList.objects.get_or_create(member_id=member_id, user_name=user_name, group=group)
+    if new_user:
+        message_to_send = "Hey, You are now part of BRUR NewBies. Please send your online judge(codeforces, uri and vjudge) " \
+                          "details to @mahmudula2000 so that I can see automically if you solved any problem. Remember If " \
+                          "you don't send information, I couldn't know about your submission and will remove you " \
+                          "from group after 72 hours"
+        sm(message_to_send, member_id)
     if message == 'add_me':
         sm('added successfully', chat_id)
     elif message.find('=delete_above') != -1 and message.find('=delete_above') != 0:
         for m in range(int(message[0]) + 1):
             rm(chat_id, message_id - m)
     elif group.name == 'BRUR NewBees':
-        if new_user:
-            message_to_send = "Hey, You are now part of BRUR NewBies. Please send your online judge(codeforces, uri and vjudge) " \
-                      "details to @mahmudula2000 so that I can see automically if you solved any problem. Remember If " \
-                      "you don't send information, I couldn't know about your submission and will remove you " \
-                      "from group after 72 hours"
-            sm(message_to_send, member_id)
+
         try:
             BannedWord.objects.get(word=message.strip().lower())
             message_id = data['message']['message_id']
