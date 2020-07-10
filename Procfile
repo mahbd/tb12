@@ -1,0 +1,1 @@
+web: gunicorn tb12.wsgi.py --log-file -
