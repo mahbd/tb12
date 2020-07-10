@@ -5,7 +5,8 @@ from bs4 import BeautifulSoup
 
 def last_submission(request):
     handle_list = {'mah_python': 'Mahmudul Alam','shakib112': 'Shakib Hossain Shanto',
-                    'MILOY': 'S.M. Miloy', 'nawab69':'Kibria', 'rakibnsajib1': 'Rakib Hossain Sajeeb'}
+                    'MILOY': 'S.M. Miloy', 'nawab69':'Kibria', 'rakibnsajib1': 'Rakib Hossain Sajeeb',
+                   'tarekjaman_labu': 'Tarek Jaman Labu'}
     res = "<p>last submission details</p>"
     for handle in handle_list:
         url = 'https://codeforces.com/submissions/' + handle + '/page/1'
