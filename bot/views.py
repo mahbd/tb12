@@ -57,7 +57,10 @@ def bot_get(request):
         group = BotAccessInfo.objects.get(type=chat_type, name=name, chat_id=chat_id)
     try:
         member_id = data['message']['new_chat_member']['id']
-        user_name = data['message']['new_chat_member']['username']
+        try:
+            user_name = data['message']['new_chat_member']['username']
+        except KeyError:
+            user_name = 'none'
         new_user = True
         print("running")
         rm(chat_id, message_id)
