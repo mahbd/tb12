@@ -1,0 +1,19 @@
+{% extends 'base/base.html' %}
+{% block content %}
+    <div class="container bg-white">
+        <form method="post" action="{% url 'bot:send_tm' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="exampleFormControlSelect1">To whom/where</label>
+                <select class="form-control" id="exampleFormControlSelect1" name="chat_id">
+                    {% for m in details %}
+                        <option value="{{ m.chat_id }}">{{ m.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <label for="message"></label>
+            <textarea name="message" class="form-control" rows="5" id="message"></textarea>
+            <button type="submit" class="btn-lg btn-success">Send</button>
+        </form>
+    </div>
+{% endblock content %}

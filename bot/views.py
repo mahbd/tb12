@@ -1,5 +1,9 @@
 import json
+
+import requests
 from django.http import HttpResponse
+from django.shortcuts import render
+
 from .models import BotAccessInfo
 
 
@@ -36,3 +40,25 @@ def bot_get(request):
     )
     '''
     return HttpResponse("Success")
+
+
+def send_tm(request):
+    if request.method == 'POST':
+        telegram_url = "https://api.telegram.org/bot"
+        tutorial_bot_token = "1214433734:AAGgKkYrFuiMSXmRNoUmVPvaBUD9HVVgVuM"
+        data = {
+            "chat_id": request.POST['chat_id'],
+            "text": request.POST['message'],
+            "parse_mode": "Markdown",
+        }
+        requests.post(
+            f"{telegram_url}{tutorial_bot_token}/sendMessage", data=data
+        )
+        return HttpResponse("message sent")
+    else:
+        details = BotAccessInfo.objects.all()
+        context = {
+            'title': 'send_message',
+            'details': details,
+        }
+        return render(request, 'bot/send_tm.html', context)
