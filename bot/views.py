@@ -68,7 +68,10 @@ def bot_get(request):
         pass
     try:
         member_id = data['message']['from']['id']
-        user_name = data['message']['from']['username']
+        try:
+            user_name = data['message']['from']['username']
+        except KeyError:
+            user_name = 'none'
     except KeyError:
         pass
     MemberList.objects.get_or_create(member_id=member_id, user_name=user_name, group=group)
