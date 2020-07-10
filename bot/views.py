@@ -23,7 +23,7 @@ def rm(chat_id, message_id):
         "chat_id": chat_id,
         "message_id": message_id
     }
-    res = requests.post(telegram_url, data=data)
+    res = requests.post(telegram_url, data=data).json()
     print(res)
 
 
@@ -63,7 +63,7 @@ def bot_get(request):
                           "you don't send information, I couldn't know about your submission and will remove you " \
                           "from group after 72 hours"
         res = sm(message_to_send, member_id)
-        rm(chat_id, message_id)
+        # rm(chat_id, message_id)
         print(res)
     except KeyError:
         pass
