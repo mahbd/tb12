@@ -7,7 +7,7 @@ from tb12.settings import BOT_ACCESS_TOKEN
 
 
 def sm(text, chat_id):
-    telegram_url = 'https://api.telegram.org/bot' + BOT_ACCESS_TOKEN + 'sendMessage'
+    telegram_url = 'https://api.telegram.org/bot' + BOT_ACCESS_TOKEN + '/sendMessage'
     data = {
         "chat_id": chat_id,
         "text": text,
