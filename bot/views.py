@@ -26,19 +26,18 @@ def bot_get(request):
         except KeyError:
             name = 'not_found'
     BotAccessInfo.objects.get_or_create(type=chat_type, name=name, chat_id=chat_id)
+    if message == 'add_me':
+        telegram_url = "https://api.telegram.org/bot"
+        tutorial_bot_token = "1214433734:AAGgKkYrFuiMSXmRNoUmVPvaBUD9HVVgVuM"
+        data = {
+            "chat_id": chat_id,
+            "text": 'Added successfully.',
+            "parse_mode": "Markdown",
+        }
+        requests.post(
+            f"{telegram_url}{tutorial_bot_token}/sendMessage", data=data
+        )
     print(data)
-    '''
-    telegram_url = "https://api.telegram.org/bot"
-    tutorial_bot_token = "1214433734:AAGgKkYrFuiMSXmRNoUmVPvaBUD9HVVgVuM"
-    data = {
-        "chat_id": chat_id,
-        "text": message,
-        "parse_mode": "Markdown",
-    }
-    requests.post(
-        f"{telegram_url}{tutorial_bot_token}/sendMessage", data=data
-    )
-    '''
     return HttpResponse("Success")
 
 
