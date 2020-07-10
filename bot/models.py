@@ -19,7 +19,7 @@ class MemberList(models.Model):
     member_name = models.TextField(blank=True, null=True)
     member_id = models.TextField(blank=True, null=True)
     user_name = models.TextField(blank=True, null=True)
-    group = models.ForeignKey(BotAccessInfo, on_delete=models.CASCADE)
+    group = models.ManyToManyField(BotAccessInfo, blank=True)
 
     def __str__(self):
         return self.user_name
