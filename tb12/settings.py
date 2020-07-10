@@ -30,6 +30,7 @@ ALLOWED_HOSTS = ['pb12.herokuapp.com', '127.0.0.1']
 
 INSTALLED_APPS = [
     # own
+    'bot',
     'home',
     'cf',
     # default
