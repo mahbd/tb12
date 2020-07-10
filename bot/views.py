@@ -56,6 +56,14 @@ def bot_get(request):
     else:
         group = BotAccessInfo.objects.get(type=chat_type, name=name, chat_id=chat_id)
     try:
+        member_id = data['message']['from']['id']
+        try:
+            user_name = data['message']['from']['username']
+        except KeyError:
+            user_name = 'none'
+    except KeyError:
+        pass
+    try:
         member_id = data['message']['new_chat_member']['id']
         try:
             user_name = data['message']['new_chat_member']['username']
@@ -64,14 +72,6 @@ def bot_get(request):
         new_user = True
         print("running")
         rm(chat_id, message_id)
-    except KeyError:
-        pass
-    try:
-        member_id = data['message']['from']['id']
-        try:
-            user_name = data['message']['from']['username']
-        except KeyError:
-            user_name = 'none'
     except KeyError:
         pass
     MemberList.objects.get_or_create(member_id=member_id, user_name=user_name, group=group)
