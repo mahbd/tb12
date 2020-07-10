@@ -13,7 +13,7 @@ def sm(text, chat_id):
         "text": text,
         "parse_mode": "Markdown",
     }
-    res = requests.post(telegram_url, data=data)
+    res = requests.post(telegram_url, data=data).json()
     return res
 
 
