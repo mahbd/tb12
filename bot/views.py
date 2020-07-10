@@ -6,7 +6,7 @@ from .models import BotAccessInfo
 def bot_get(request):
     data = json.loads(request.body)
     try:
-        chat_type = data['message']['chat']['chat_type']
+        chat_type = data['message']['chat']['type']
     except KeyError:
         return HttpResponse("Success")
     try:
