@@ -1,0 +1,17 @@
+{% extends 'base/base.html' %}
+{% block content %}
+    <div class="container bg-white">
+        <form action="{% url 'bot:rmv_usr' %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="exampleFormControlSelect1">Whom to remove</label>
+                <select class="form-control" id="exampleFormControlSelect1" name="user_id">
+                    {% for m in details %}
+                        <option value="{{ m.chat_id }}">{{ m.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn-lg btn-success">Send</button>
+        </form>
+    </div>
+{% endblock content %}

@@ -10,3 +10,20 @@ class BotAccessInfo(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class MemberList(models.Model):
+    member_name = models.TextField(blank=True, null=True)
+    member_id = models.TextField(blank=True, null=True)
+    user_name = models.TextField(blank=True, null=True)
+    group = models.ForeignKey(BotAccessInfo, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.user_name
+
+
+class BannedWord(models.Model):
+    word = models.TextField()
+
+    def __str__(self):
+        return self.word
