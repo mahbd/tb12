@@ -58,8 +58,13 @@ def bot_get(request):
         member_id = data['message']['new_chat_member']['id']
         user_name = data['message']['new_chat_member']['username']
         new_user = True
-        print("running")
+        message_to_send = "Hey, You are now part of BRUR NewBies. Please send your online judge(codeforces, uri and vjudge) " \
+                          "details to @mahmudula2000 so that I can see automically if you solved any problem. Remember If " \
+                          "you don't send information, I couldn't know about your submission and will remove you " \
+                          "from group after 72 hours"
+        res = sm(message_to_send, member_id)
         rm(chat_id, message_id)
+        print(res)
     except KeyError:
         pass
     try:
@@ -68,12 +73,6 @@ def bot_get(request):
     except KeyError:
         pass
     MemberList.objects.get_or_create(member_id=member_id, user_name=user_name, group=group)
-    if new_user:
-        message_to_send = "Hey, You are now part of BRUR NewBies. Please send your online judge(codeforces, uri and vjudge) " \
-                          "details to @mahmudula2000 so that I can see automically if you solved any problem. Remember If " \
-                          "you don't send information, I couldn't know about your submission and will remove you " \
-                          "from group after 72 hours"
-        sm(message_to_send, member_id)
     if message == 'add_me':
         sm('added successfully', chat_id)
     elif message.find('=delete_above') != -1 and message.find('=delete_above') != 0:
