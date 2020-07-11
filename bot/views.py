@@ -6,6 +6,107 @@ from .models import BotAccessInfo, MemberList, BannedWord
 from tb12.settings import BOT_ACCESS_TOKEN
 
 
+def error_handle(data, key):
+    try:
+        res = data[key]
+    except:
+        res = '0'
+    if res == '':
+        res = '0'
+    return res
+
+
+def name_handle(data):
+    user_details = []
+    try:
+        new = data['new_chat_member']
+        try:
+            fn = new['first_name']
+            if fn == '' or fn is None:
+                fn = '0'
+        except KeyError:
+            fn = '0'
+        try:
+            ln = new['last_name']
+            if ln == '' or ln is None:
+                ln = '0'
+        except KeyError:
+            ln = '0'
+        try:
+            user_name = new['username']
+            if user_name == '' or user_name == None:
+                user_name = '0'
+        except KeyError:
+            user_name = '0'
+        try:
+            user_id = new['id']
+            if user_id == '' or user_id is None:
+                user_id = '0'
+        except KeyError:
+            user_id = '0'
+    except KeyError:
+        try:
+            fn = data['from']['first_name']
+            if fn == '' or fn is None:
+                fn = '0'
+        except KeyError:
+            fn = '0'
+        try:
+            ln = data['from']['last_name']
+            if ln == '' or ln is None:
+                ln = '0'
+        except KeyError:
+            ln = '0'
+        try:
+            user_name = data['from']['username']
+            if user_name == '' or user_name is None:
+                user_name = '0'
+        except KeyError:
+            user_name = '0'
+        try:
+            user_id = data['from']['id']
+            if user_id == '' or user_id is None:
+                user_id = '0'
+        except KeyError:
+            user_id = '0'
+    user_details.append(fn + ' ' + ln)
+    user_details.append(user_id)
+    user_details.append(user_name)
+    return user_details
+
+
+def extract_tm(data):
+    data = data['message']
+    chat = data['chat']
+    user_details = name_handle(data)
+    try:
+        new_user = data['new_chat_member']
+        if new_user:
+            new_user = True
+        else:
+            new_user = False
+    except KeyError:
+        new_user = False
+    try:
+        group_name = chat['title']
+        is_group = True
+    except KeyError:
+        group_name = '0'
+        is_group = False
+    to_send = {'message_id': error_handle(data, 'message_id'),
+               'message': error_handle(data, 'text'),
+               'chat_id': error_handle(chat, 'id'),
+               'chat_type': error_handle(chat, 'type'),
+               'name': user_details[0],
+               'user_id': user_details[1],
+               'username': user_details[2],
+               'new_user': new_user,
+               'group_name': group_name,
+               'is_group': is_group,
+               }
+    return to_send
+
+
 def sm(text, chat_id):
     telegram_url = 'https://api.telegram.org/bot' + BOT_ACCESS_TOKEN + '/sendMessage'
     data = {
@@ -29,89 +130,35 @@ def rm(chat_id, message_id):
 
 
 def bot_get(request):
-    new_user = False
     data = json.loads(request.body)
-    try:
-        chat_type = data['message']['chat']['type']
-    except KeyError:
-        return HttpResponse("Success")
-    try:
-        message = data['message']['text']
-    except KeyError:
-        message = "ErrorHappenedInBot"
-    chat_id = data['message']['chat']['id']
-    message_id = data['message']['message_id']
-    if chat_type == 'group' or chat_type == 'supergroup':
-        name = data['message']['chat']['title']
+    data = extract_tm(data)
+    if data['is_group']:
+        BotAccessInfo.objects.get_or_create(type=data['chat_type'], name=data['group_name'], chat_id=data['chat_id'])
+        group = BotAccessInfo.objects.get(name=data['group_name'], chat_id=data['chat_id'])
+        MemberList.objects.get_or_create(member_id=data['user_id'], user_name=data['username'], member_name=data['name'])
+        MemberList.objects.get(member_id=data['user_id']).group.add(group)
     else:
-        try:
-            name = data['message']['from']['username']
-        except KeyError:
-            name = 'not_found'
-    member_id = 100
-    user_name = 'none'
-    try:
-        fn = data['message']['from']['first_name']
-    except KeyError:
-        fn = 'none'
-    try:
-        ln = data['message']['from']['last_name']
-    except KeyError:
-        ln = 'none'
-    u_n_bot = fn + ' ' + ln
-    BotAccessInfo.objects.get_or_create(type=chat_type, name=u_n_bot, chat_id=chat_id)
-    if chat_type == 'private':
-        group = BotAccessInfo.objects.get(name='private')
-    else:
-        group = BotAccessInfo.objects.get(type=chat_type, name=name, chat_id=chat_id)
-    try:
-        member_id = data['message']['from']['id']
-        try:
-            user_name = data['message']['from']['username']
-        except KeyError:
-            user_name = 'none'
-    except KeyError:
-        pass
-    try:
-        member_id = data['message']['new_chat_member']['id']
-        try:
-            user_name = data['message']['new_chat_member']['username']
-        except KeyError:
-            user_name = 'none'
-        new_user = True
-        print("running")
-        rm(chat_id, message_id)
-    except KeyError:
-        pass
-    if not new_user:
-        user_name_save = fn + ' ' + ln
-    else:
-        user_name_save = 'no message yet'
-    MemberList.objects.get_or_create(member_id=member_id, user_name=user_name, member_name=user_name_save)
-    MemberList.objects.get(member_id=member_id, user_name=user_name).group.add(group)
-    if message == 'add_me':
-        sm('added successfully', chat_id)
-    elif message.find('=delete_above') != -1 and message.find('=delete_above') != 0:
-        for m in range(int(message[0]) + 1):
-            rm(chat_id, message_id - m)
-    elif group.name == 'BRUR NewBees' or group.name == 'bot_test':
-        if new_user:
+        MemberList.objects.get_or_create(member_id=data['user_id'], user_name=data['username'],
+                                         member_name=data['name'])
+    if data['group_name'] == 'BRUR NewBees' or data['group_name'] == 'bot_test':
+        if data['new_user']:
             mts = "Hey, You are now part of BRUR NewBies. Please send your online judge(codeforces, uri and vjudge) " \
                   "details to @mahmudula2000 so that I can see automically if you solved any problem. Remember If " \
                   "you don't send information, I couldn't know about your submission and will remove you " \
-                  "from group after 72 hours"
-            sm(mts, member_id)
-        try:
-            BannedWord.objects.get(word=message.strip().lower())
-            message_id = data['message']['message_id']
-            rm(chat_id, message_id)
-            sm("Your message contains banned sentence, so auto deleted", member_id)
-        except BannedWord.DoesNotExist:
-            pass
-        except BannedWord.MultipleObjectsReturned:
-            message_id = data['message']['message_id']
-            rm(chat_id, message_id)
-    print(data)
+                  "from group after 72 hours. If already sent, no need to send again."
+            sm(mts, data['user_id'])
+            rm(data['chat_id'], data['message_id'])
+            try:
+                BannedWord.objects.get(word=data['message'].strip().lower())
+                rm(data['chat_id'], data['message_id'])
+                sm("Your message contains banned sentence, so auto deleted", data['user_id'])
+            except BannedWord.DoesNotExist:
+                pass
+            except BannedWord.MultipleObjectsReturned:
+                rm(data['chat_id'], data['message_id'])
+                sm("Your message contains banned sentence, so auto deleted", data['user_id'])
+    elif data['message'] == 'add_me':
+        sm("added successfully", data['chat_id'])
     return HttpResponse("Success")
 
 
