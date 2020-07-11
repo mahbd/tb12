@@ -159,11 +159,14 @@ def bot_get(request):
                 sm("Your message contains banned sentence, so auto deleted", data['user_id'])
     elif data['message'] == 'add_me':
         sm("added successfully", data['chat_id'])
-    if data['message'].strip().find('=delete_above') != -1 or data['message'].strip().find('=delete_above'):
+    if data['message'].strip().find('=delete_above') != -1 or data['message'].strip().find('=delete_above') != 0:
         amount_del = int(data['message'][:data['message'].strip().find('=delete_above')]) + 1
-        for ext_mid in range(amount_del):
-            rm(data['chat_id'], int(data['message_id']) + ext_mid)
-        sm("removed_successfully", data['user_id'])
+        if amount_del <= 21:
+            for ext_mid in range(amount_del):
+                rm(data['chat_id'], int(data['message_id']) + ext_mid)
+            sm("removed_successfully", data['user_id'])
+        else:
+            sm("can't delete more than 20", data['user_id'])
     print(data)
     return HttpResponse("Success")
 
