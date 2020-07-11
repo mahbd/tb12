@@ -10,7 +10,6 @@ def home(request):
 def abd(request):
     if request.method == 'POST':
         BannedWord.objects.get_or_create(word=str(request.POST['word']).strip().lower())
-        return HttpResponse("Added")
     context = {
         'title': 'banned word',
         'words': BannedWord.objects.all(),
