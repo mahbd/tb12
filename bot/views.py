@@ -166,6 +166,7 @@ def bot_get(request):
                 rm(data['chat_id'], int(data['message_id']) + ext_mid)
             sm("removed_successfully", data['user_id'])
         else:
+            rm(data['chat_id'], data['message_id'])
             sm("can't delete more than 20", data['user_id'])
     print(data)
     return HttpResponse("Success")
