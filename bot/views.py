@@ -160,7 +160,7 @@ def bot_get(request):
     elif data['message'] == 'add_me':
         sm("added successfully", data['chat_id'])
     if data['message'].strip().find('=delete_above') != -1 or data['message'].strip().find('=delete_above') != 0:
-        amount_del = int(data['message'][:data['message'].strip().find('=delete_above')]) + 1
+        amount_del = int(data['message'][:int(data['message'].strip().find('=delete_above'))]) + 1
         if amount_del <= 21:
             for ext_mid in range(amount_del):
                 rm(data['chat_id'], int(data['message_id']) + ext_mid)
