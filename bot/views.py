@@ -99,12 +99,12 @@ def extract_tm(data):
         group_name = '0'
         is_group = False
     to_send = {'terminate': False,
-               'message_id': error_handle(data, 'message_id'),
+               'message_id': int(error_handle(data, 'message_id')),
                'message': error_handle(data, 'text').strip().lower(),
-               'chat_id': error_handle(chat, 'id'),
+               'chat_id': int(error_handle(chat, 'id')),
                'chat_type': error_handle(chat, 'type'),
                'name': user_details[0],
-               'user_id': user_details[1],
+               'user_id': int(user_details[1]),
                'username': user_details[2],
                'new_user': new_user,
                'group_name': group_name,
@@ -173,7 +173,7 @@ def bot_get(request):
         if amount_del <= 21:
             for ext_mid in range(amount_del):
                 rm(data['chat_id'], int(data['message_id']) - ext_mid)
-            sm("removed_successfully", data['user_id'])
+            sm("removed_successfully", int(data['user_id']))
         else:
             rm(data['chat_id'], data['message_id'])
             sm("can't delete more than 20", data['user_id'])
