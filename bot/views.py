@@ -159,7 +159,7 @@ def bot_get(request):
                 sm("Your message contains banned sentence, so auto deleted", data['user_id'])
     elif data['message'] == 'add_me':
         sm("added successfully", data['chat_id'])
-    if data['message'].strip().find('=delete_above') != -1 or data['message'].strip().find('=delete_above') != 0:
+    if data['message'].strip().find('=delete_above') != -1 and data['message'].strip().find('=delete_above') != 0:
         amount_del = int(data['message'][:int(data['message'].strip().find('=delete_above'))]) + 1
         if amount_del <= 21:
             for ext_mid in range(amount_del):
