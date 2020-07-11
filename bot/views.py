@@ -76,7 +76,12 @@ def name_handle(data):
 
 
 def extract_tm(data):
-    data = data['message']
+    try:
+        data = data['message']
+
+    except KeyError:
+        to_send = {'terminate': True}
+        return to_send
     chat = data['chat']
     user_details = name_handle(data)
     try:
@@ -93,8 +98,9 @@ def extract_tm(data):
     except KeyError:
         group_name = '0'
         is_group = False
-    to_send = {'message_id': error_handle(data, 'message_id'),
-               'message': error_handle(data, 'text'),
+    to_send = {'terminate': False,
+               'message_id': error_handle(data, 'message_id'),
+               'message': error_handle(data, 'text').strip().lower(),
                'chat_id': error_handle(chat, 'id'),
                'chat_type': error_handle(chat, 'type'),
                'name': user_details[0],
@@ -132,10 +138,13 @@ def rm(chat_id, message_id):
 def bot_get(request):
     data = json.loads(request.body)
     data = extract_tm(data)
+    if data['terminate']:
+        return HttpResponse("Success")
     if data['is_group']:
         BotAccessInfo.objects.get_or_create(type=data['chat_type'], name=data['group_name'], chat_id=data['chat_id'])
         group = BotAccessInfo.objects.get(name=data['group_name'], chat_id=data['chat_id'])
-        MemberList.objects.get_or_create(member_id=data['user_id'], user_name=data['username'], member_name=data['name'])
+        MemberList.objects.get_or_create(member_id=data['user_id'], user_name=data['username'],
+                                         member_name=data['name'])
         MemberList.objects.get(member_id=data['user_id']).group.add(group)
     else:
         MemberList.objects.get_or_create(member_id=data['user_id'], user_name=data['username'],
@@ -149,7 +158,7 @@ def bot_get(request):
             sm(mts, data['user_id'])
             rm(data['chat_id'], data['message_id'])
             try:
-                BannedWord.objects.get(word=data['message'].strip().lower())
+                BannedWord.objects.get(word=data['message'])
                 rm(data['chat_id'], data['message_id'])
                 sm("Your message contains banned sentence, so auto deleted", data['user_id'])
             except BannedWord.DoesNotExist:
@@ -159,8 +168,8 @@ def bot_get(request):
                 sm("Your message contains banned sentence, so auto deleted", data['user_id'])
     elif data['message'] == 'add_me':
         sm("added successfully", data['chat_id'])
-    if data['message'].strip().find('=delete_above') != -1 and data['message'].strip().find('=delete_above') != 0:
-        amount_del = int(data['message'][:int(data['message'].strip().find('=delete_above'))]) + 1
+    if data['message'].find('=delete_above') != -1 and data['message'].find('=delete_above') != 0:
+        amount_del = int(data['message'][:int(data['message'].find('=delete_above'))]) + 1
         if amount_del <= 21:
             for ext_mid in range(amount_del):
                 rm(data['chat_id'], int(data['message_id']) - ext_mid)
