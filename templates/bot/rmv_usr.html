@@ -7,7 +7,7 @@
                 <label for="exampleFormControlSelect1">Whom to remove</label>
                 <select class="form-control" id="exampleFormControlSelect1" name="user_id">
                     {% for m in details %}
-                        <option value="{{ m.member_id }}">{{ m.user_name }}</option>
+                        <option value="{{ m.member_id }}">{{ m.user_name }} --> {{ m.member_name }}</option>
                     {% endfor %}
                 </select>
             </div>

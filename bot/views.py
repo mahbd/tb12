@@ -50,7 +50,16 @@ def bot_get(request):
             name = 'not_found'
     member_id = 100
     user_name = 'none'
-    BotAccessInfo.objects.get_or_create(type=chat_type, name=name, chat_id=chat_id)
+    try:
+        fn = data['message']['from']['first_name']
+    except KeyError:
+        fn = 'none'
+    try:
+        ln = data['message']['from']['last_name']
+    except KeyError:
+        ln = 'none'
+    u_n_bot = fn + ' ' + ln
+    BotAccessInfo.objects.get_or_create(type=chat_type, name=u_n_bot, chat_id=chat_id)
     if chat_type == 'private':
         group = BotAccessInfo.objects.get(name='private')
     else:
@@ -74,7 +83,11 @@ def bot_get(request):
         rm(chat_id, message_id)
     except KeyError:
         pass
-    MemberList.objects.get_or_create(member_id=member_id, user_name=user_name)
+    if not new_user:
+        user_name_save = fn + ' ' + ln
+    else:
+        user_name_save = 'no message yet'
+    MemberList.objects.get_or_create(member_id=member_id, user_name=user_name, member_name=user_name_save)
     MemberList.objects.get(member_id=member_id, user_name=user_name).group.add(group)
     if message == 'add_me':
         sm('added successfully', chat_id)

@@ -22,7 +22,7 @@ class MemberList(models.Model):
     group = models.ManyToManyField(BotAccessInfo, blank=True)
 
     def __str__(self):
-        return self.user_name
+        return self.user_name + ' ' + self.member_name
 
     class Meta:
         ordering = ['user_name']
