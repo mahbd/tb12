@@ -163,7 +163,7 @@ def bot_get(request):
         amount_del = int(data['message'][:int(data['message'].strip().find('=delete_above'))]) + 1
         if amount_del <= 21:
             for ext_mid in range(amount_del):
-                rm(data['chat_id'], int(data['message_id']) + ext_mid)
+                rm(data['chat_id'], int(data['message_id']) - ext_mid)
             sm("removed_successfully", data['user_id'])
         else:
             rm(data['chat_id'], data['message_id'])
