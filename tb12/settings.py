@@ -33,7 +33,7 @@ INSTALLED_APPS = [
     # own
     'bot',
     'home',
-    'cf',
+    'contest',
     # default
     'django.contrib.admin',
     'django.contrib.auth',
