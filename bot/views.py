@@ -163,7 +163,7 @@ def bot_get(request):
             sm(mts, data['user_id'])
             rm(data['chat_id'], data['message_id'])
             try:
-                BannedWord.objects.get(word=data['message'])
+                BannedWord.objects.get(word__startswith=data['message'])
                 rm(data['chat_id'], data['message_id'])
                 sm("Your message contains banned sentence, so auto deleted", data['user_id'])
             except BannedWord.DoesNotExist:
