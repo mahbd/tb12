@@ -2,7 +2,7 @@ import json
 import requests
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
-from .models import BotAccessInfo, MemberList, BannedWord
+from .models import BotAccessInfo, MemberList, BannedWord, BotMessage
 from tb12.settings import BOT_ACCESS_TOKEN
 
 
@@ -113,6 +113,12 @@ def extract_tm(data):
     return to_send
 
 
+def save_to_database(data):
+    BotMessage.objects.create(message_id=data['message_id'], message=data['message'], chat_id=str(data['chat_id']),
+                              chat_type=data['chat_type'], name=data['name'], user_id=data['user_id'],
+                              username=data['username'], group_name=data['group_name'])
+
+
 def sm(text, chat_id):
     telegram_url = 'https://api.telegram.org/bot' + BOT_ACCESS_TOKEN + '/sendMessage'
     data = {
@@ -178,6 +184,7 @@ def bot_get(request):
             rm(data['chat_id'], data['message_id'])
             sm("can't delete more than 20", data['user_id'])
     print(data)
+    save_to_database(data)
     return HttpResponse("Success")
 
 

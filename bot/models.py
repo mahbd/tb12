@@ -37,3 +37,22 @@ class BannedWord(models.Model):
 
     def __str__(self):
         return self.word
+
+
+class BotMessage(models.Model):
+    name = models.CharField(max_length=300)
+    username = models.CharField(max_length=300)
+    user_id = models.CharField(max_length=20)
+    group_name = models.CharField(max_length=300)
+    message_id = models.CharField(max_length=20)
+    message = models.TextField()
+    chat_id = models.CharField(max_length=20)
+    chat_type = models.TextField(max_length=50)
+    date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-date']
+        verbose_name_plural = 'BotMessages'
+
+    def __str__(self):
+        return self.name + '-->' + self.message[:50]

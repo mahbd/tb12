@@ -119,11 +119,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
-try:
-    BOT_ACCESS_TOKEN = str(os.environ.get('BOT_ACCESS_TOKEN'))
-except KeyError:
-    m, f = [], open('bot.txt', 'r')
-    for k in f:
-        m.append(k)
-    BOT_ACCESS_TOKEN = m[0].strip()
+BOT_ACCESS_TOKEN = str(os.environ.get('BOT_ACCESS_TOKEN'))
 django_heroku.settings(locals())
