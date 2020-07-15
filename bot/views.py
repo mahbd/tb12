@@ -162,15 +162,15 @@ def bot_get(request):
                   "from group after 72 hours. If already sent, no need to send again."
             sm(mts, data['user_id'])
             rm(data['chat_id'], data['message_id'])
-            try:
-                BannedWord.objects.get(word__startswith=data['message'])
-                rm(data['chat_id'], data['message_id'])
-                sm("Your message contains banned sentence, so auto deleted", data['user_id'])
-            except BannedWord.DoesNotExist:
-                pass
-            except BannedWord.MultipleObjectsReturned:
-                rm(data['chat_id'], data['message_id'])
-                sm("Your message contains banned sentence, so auto deleted", data['user_id'])
+        try:
+            BannedWord.objects.get(word__startswith=data['message'])
+            rm(data['chat_id'], data['message_id'])
+            sm("Your message contains banned sentence, so auto deleted", data['user_id'])
+        except BannedWord.DoesNotExist:
+            pass
+        except BannedWord.MultipleObjectsReturned:
+            rm(data['chat_id'], data['message_id'])
+            sm("Your message contains banned sentence, so auto deleted", data['user_id'])
     if data['message'] == 'add_me':
         sm("added successfully", data['chat_id'])
     if data['message'].find('=delete_above') != -1 and data['message'].find('=delete_above') != 0:
