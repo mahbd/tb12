@@ -124,7 +124,6 @@ def sm(text, chat_id):
     data = {
         "chat_id": chat_id,
         "text": text,
-        "parse_mode": "Markdown",
     }
     res = requests.post(telegram_url, data=data).json()
     print(res)
@@ -172,7 +171,7 @@ def bot_get(request):
             except BannedWord.MultipleObjectsReturned:
                 rm(data['chat_id'], data['message_id'])
                 sm("Your message contains banned sentence, so auto deleted", data['user_id'])
-    elif data['message'] == 'add_me':
+    if data['message'] == 'add_me':
         sm("added successfully", data['chat_id'])
     if data['message'].find('=delete_above') != -1 and data['message'].find('=delete_above') != 0:
         amount_del = int(data['message'][:int(data['message'].find('=delete_above'))]) + 1
