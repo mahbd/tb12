@@ -190,9 +190,10 @@ def bot_get(request):
 def send_tm(request):
     if request.method == 'POST':
         res = sm(request.POST['message'], request.POST['chat_id'])
+        print(res)
         return JsonResponse(res)
     else:
-        details = BotAccessInfo.objects.all()
+        details = MemberList.objects.all()
         context = {
             'title': 'send_message',
             'details': details,
