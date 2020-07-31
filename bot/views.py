@@ -147,10 +147,15 @@ def bot_get(request):
         return HttpResponse("Success")
     if data['is_group']:
         BotAccessInfo.objects.get_or_create(type=data['chat_type'], name=data['group_name'], chat_id=data['chat_id'])
-        group = BotAccessInfo.objects.get(name=data['group_name'], chat_id=data['chat_id'])
+        try:
+            group = BotAccessInfo.objects.get(name=data['group_name'], chat_id=data['chat_id'])
+        except BotAccessInfo.DoesNotExist:
+            BotAccessInfo.objects.create(name=data['group_name'], chat_id=data['chat_id'])
+            group = BotAccessInfo.objects.get(name=data['group_name'], chat_id=data['chat_id'])
         MemberList.objects.get_or_create(member_id=data['user_id'], user_name=data['username'],
                                          member_name=data['name'])
-        MemberList.objects.get(member_id=data['user_id']).group.add(group)
+        MemberList.objects.get(member_id=data['user_id'], user_name=data['username'],
+                               member_name=data['name']).group.add(group)
     else:
         MemberList.objects.get_or_create(member_id=data['user_id'], user_name=data['username'],
                                          member_name=data['name'])
