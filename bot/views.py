@@ -180,13 +180,13 @@ def bot_get(request):
         sm("added successfully", data['chat_id'])
     if data['message'].find('=delete_above') != -1 and data['message'].find('=delete_above') != 0:
         amount_del = int(data['message'][:int(data['message'].find('=delete_above'))]) + 1
-        if amount_del <= 21:
+        if amount_del <= 101:
             for ext_mid in range(amount_del):
                 rm(data['chat_id'], int(data['message_id']) - ext_mid)
             sm("removed_successfully", int(data['user_id']))
         else:
             rm(data['chat_id'], data['message_id'])
-            sm("can't delete more than 20", data['user_id'])
+            sm("can't delete more than 100", data['user_id'])
     print(data)
     save_to_database(data)
     return HttpResponse("Success")
